@@ -46,8 +46,6 @@ STR_FMT_SET_TO = " set to %s "
 class piLink:
     def __init__(self, tempControl, path, eepromManager):
         # Set up a pty to accept serial input as if we are an Arduino
-        # FIXME: Make this a socket interface.  The main brewpi code can send to a socket.
-        # use port 25518 (beer 2 5 5 18)
         os.setegid(20)
         master, slave = pty.openpty()
 
@@ -73,6 +71,8 @@ class piLink:
         os.symlink(port_name, path)
 
         print("Listening on '%s' as '%s'" % (port_name, path))
+
+        # self.f is where all the socket networking goes through
         self.f = os.fdopen(master, 'wb+', buffering=0)
         self.portName = port_name
         self.path = path

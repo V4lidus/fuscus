@@ -28,7 +28,6 @@ logging.basicConfig(filename='fuscus.log', level=logging.DEBUG)
 
 import time
 import signal
-
 import AppConfigDefault  # FIXME is this needed?
 
 # import piLink
@@ -71,6 +70,9 @@ def setup():
     # This loads the settings if saved (and the defaults, if not)
     eepromManager.applySettings()  # NOTE - This replaces settingsManager.loadSettings()
 
+    if networkPort is not None:
+        piSerialToNet.start()
+
     start = time.time()
     delay = ui.showStartupPage(piLink.portName)
     while (time.time() - start <= delay):
@@ -85,7 +87,6 @@ def setup():
 def loop():
     '''Main loop.'''
     lastUpdate = -1  # initialise at -1 to update immediately
-
     oldState = None
 
     spinner = '|/-\\'
@@ -143,11 +144,15 @@ if __name__ == "__main__":
     tempControl.beerSensor.stop()
     tempControl.ambientSensor.stop()
     tempControl.fridgeSensor.stop()
+    if piSerialToNet is not None:
+        piSerialToNet.stop()
     encoder.stop()
     print("Waiting for threads to finish.")
     tempControl.beerSensor.join()
     tempControl.ambientSensor.join()
     tempControl.fridgeSensor.join()
+    if piSerialToNet is not None:
+        piSerialToNet.join()
     encoder.join()
     GPIO.cleanup()
     print("Finished")

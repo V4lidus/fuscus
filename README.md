@@ -29,3 +29,6 @@ temperature sensors, an LCD, and relays for the heater and cooler are
 connected to the Pi GPIO pins.
 
 There are brief installation notes [here](../master/docs/notes.md).
+
+# Updates
+* Added TCP connectivity via piSerial - this minimises changes to the core fuscus code

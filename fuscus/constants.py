@@ -31,6 +31,7 @@ import piLink
 import relay
 import rotaryEncoder
 import tempControl
+import piSerialToNet
 
 # LCD Hardware Modules
 from lcd_hardware import pcd8544
@@ -61,8 +62,8 @@ else:
     print("No 'calibration.ini' file or no calibration values present.")
 
 # Port for TCP/IP control FIXME: not implemented yet
-port = config['network'].getint('port', 25518)
-print("Network port: %s (not implemented)" % port)
+networkPort = config['network'].getint('port', 25518)
+print("Network port: %s" % networkPort)
 
 # GPIO pins (board numbering: GPIO.setmode(GPIO.BOARD))
 
@@ -237,5 +238,8 @@ tempControl.ambientSensor.calibrationOffset = ambientCalibrationOffset
 eepromManager = EepromManager.eepromManager(tempControl=tempControl)
 
 piLink = piLink.piLink(tempControl=tempControl, path=config['port'].get('path'), eepromManager=eepromManager)
-
 menu = Menu.Menu(encoder=encoder, tempControl=tempControl, piLink=piLink)
+
+# Setting up network
+if networkPort is not None:
+    piSerialToNet = piSerialToNet.PiSerialToNet(networkPort, config['port'].get('path'))
